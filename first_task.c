@@ -1,63 +1,63 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
+#include <time.h>
 #include <ctype.h>
+#include <string.h>
 
-#define MAX_LENGTH 100
+#define MIN_KEY -256
+#define MAX_KEY 256
+#define ALPHABET_SIZE 26
 
-char encrypt_char(char ch, int key) {
+char encrypt(char ch, int key) {
+    ch = tolower(ch);
     if (isalpha(ch)) {
-        char base = isupper(ch) ? 'A' : 'a';
-        return (ch - base + key + 26) % 26 + base;
+        return ((ch - 'a' + key) % ALPHABET_SIZE + ALPHABET_SIZE) % ALPHABET_SIZE + 'a';
     }
-    return ch; 
-}
-
-void encrypt_string(char *input, int key, char *output) {
-    for (int i = 0; input[i] != '\0'; i++) {
-        output[i] = encrypt_char(input[i], key);
-    }
-    output[strlen(input)] = '\0';
-}
-
-int break_caesar_cipher(char *encrypted) {
-    int frequency[26] = {0};
-    
-    for (int i = 0; encrypted[i] != '\0'; i++) {
-        if (isalpha(encrypted[i])) {
-            char lower = tolower(encrypted[i]);
-            frequency[lower - 'a']++;
-        }
-    }
-
-    int max_index = 0;
-    for (int i = 1; i < 26; i++) {
-        if (frequency[i] > frequency[max_index]) {
-            max_index = i;
-        }
-    }
-
-
-    int key = (max_index - (4 + 26)) % 26;
-    return key < 0 ? key + 26 : key;
+    return ch;
 }
 
 int main() {
-    char input[MAX_LENGTH];
-    char encrypted[MAX_LENGTH];
-    int key;
+    char input[101]; // Array to hold the input string (max 100 characters + null terminator)
+    int key, freq[ALPHABET_SIZE] = {0}; // Frequency array for letters
+    char most_common_char;
+    int most_common_freq = 0;
 
+    // Input: normal English string
     printf("Enter a normal English string (up to 100 characters): ");
-    fgets(input, MAX_LENGTH, stdin);
-    input[strcspn(input, "\n")] = '\0';
-
-    printf("Enter the encryption key: ");
+    fgets(input, sizeof(input), stdin);
+    
+    // Input: encryption key
+    printf("Enter the encryption key (as an integer): ");
     scanf("%d", &key);
 
-    encrypt_string(input, key, encrypted);
-    printf("Encrypted string: %s\n", encrypted);
+    // Encrypt the input string
+    char encrypted[101]; // Array to hold the encrypted string
+    for (int i = 0; i < strlen(input); i++) {
+        encrypted[i] = encrypt(input[i], key);
+        // Count frequency of letters
+        if (isalpha(encrypted[i])) {
+            freq[tolower(encrypted[i]) - 'a']++;
+        }
+    }
+    encrypted[strlen(input)] = '\0'; // Null terminate the encrypted string
 
-    int decrypted_key = break_caesar_cipher(encrypted);
-    printf("Decrypted key: %d\n", decrypted_key);
+    // Find the most common letter in the encrypted string
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        if (freq[i] > most_common_freq) {
+            most_common_freq = freq[i];
+            most_common_char = i + 'a';
+        }
+    }
+
+    // Calculate the decryption key
+    int decrypted_key = (most_common_char - 'e' + ALPHABET_SIZE) % ALPHABET_SIZE;
+
+    // Output: Decrypted encryption key
+    printf("The decryption key is: %d\n", decrypted_key);
+
+    // Evaluate time and space complexity
+    printf("Time Complexity: O(n), where n is the length of the input string.\n");
+    printf("Space Complexity: O(1) for the frequency array.\n");
 
     return 0;
 }

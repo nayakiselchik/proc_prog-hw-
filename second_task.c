@@ -21,6 +21,7 @@ void print_float_info(float number) {
     if (exponent == 0) {
         mantissa_value = mantissa / (float)(1 << 23);
         adjusted_exponent = -126;
+    } else {
         mantissa_value = 1.0f + mantissa / (float)(1 << 23);
         adjusted_exponent = exponent - 127;
     }

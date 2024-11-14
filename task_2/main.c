@@ -21,7 +21,6 @@ int main() {
 
     srand(time(NULL));
 
-    // Initialize array with random numbers [0..10]
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             *(arr[i] + j) = rand() % 11;
@@ -35,7 +34,6 @@ int main() {
     printf("Original array:\n");
     printArray(&arr[0][0], N);
 
-    // Set rows and columns to zero based on rowZero and colZero
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             if (rowZero[i] == 1 || colZero[j] == 1) {
